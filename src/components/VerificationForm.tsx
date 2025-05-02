@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { IdCard, Phone } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { FileText, Phone } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { 
   validateUruguayanId, 
@@ -25,15 +26,20 @@ const VerificationForm: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [retrievedPhone, setRetrievedPhone] = useState('');
   const [showCodeVerification, setShowCodeVerification] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Clear any previous errors
+    setError(null);
     // Only allow digits
     const value = e.target.value.replace(/\D/g, '');
     setIdNumber(value.substring(0, 8));
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Clear any previous errors
+    setError(null);
     // Only allow digits and format as 09X XXX XXX
     let value = e.target.value.replace(/\D/g, '');
     
@@ -46,9 +52,13 @@ const VerificationForm: React.FC = () => {
     setPhoneNumber(formatPhoneNumber(value));
   };
 
-  const mockRetrievePhoneByID = (id: string): string => {
+  const mockRetrievePhoneByID = (id: string): string | null => {
     // In a real application, this would call an API to retrieve the phone number
-    return '098 765 432'; // Mocked phone number
+    // Mock some IDs that don't have numbers
+    if (id === '12345678') {
+      return null;
+    }
+    return '098 765 432'; // Mocked phone number for other IDs
   };
 
   const handleSendCode = () => {
@@ -64,7 +74,14 @@ const VerificationForm: React.FC = () => {
       
       // In a real app, this would make an API call to get the phone number
       const phone = mockRetrievePhoneByID(idNumber);
+      
+      if (!phone) {
+        setError('No encontramos un número de teléfono asociado a esta cédula. Por favor, verifique el número o utilice la opción de ingresar celular.');
+        return;
+      }
+      
       setRetrievedPhone(phone);
+      setError(null);
       
       toast({
         title: 'Código enviado',
@@ -83,6 +100,7 @@ const VerificationForm: React.FC = () => {
       }
       
       setRetrievedPhone(phoneNumber);
+      setError(null);
       
       toast({
         title: 'Código enviado',
@@ -112,32 +130,34 @@ const VerificationForm: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold mb-2">Verificación de identidad</h2>
-        <p className="text-gray-600 text-sm">
-          Seleccione un método de verificación para continuar
-        </p>
-      </div>
+    <div className="space-y-8">
+      {error && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       <RadioGroup 
         value={method} 
-        onValueChange={(value) => setMethod(value as VerificationMethod)}
-        className="flex flex-col space-y-4"
+        onValueChange={(value) => {
+          setMethod(value as VerificationMethod);
+          setError(null);
+        }}
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
       >
-        <div className={`flex items-start space-x-3 rounded-md border border-gray-200 p-4 ${method === VerificationMethod.ID ? 'bg-primary/5 border-primary/30' : ''}`}>
+        <div className={`flex items-start space-x-4 rounded-md border border-gray-200 p-6 ${method === VerificationMethod.ID ? 'bg-primary/5 border-primary/30' : ''}`}>
           <RadioGroupItem value={VerificationMethod.ID} id="id-option" className="mt-1" />
           <div className="flex-1">
             <div className="flex items-center">
-              <Label htmlFor="id-option" className="font-medium flex items-center gap-1">
-                <IdCard size={18} className="text-primary" />
-                <span>🆔 Ingresar cédula de identidad</span>
+              <Label htmlFor="id-option" className="font-medium flex items-center gap-2 text-lg">
+                <FileText size={24} className="text-primary" />
+                <span>Ingresar cédula de identidad</span>
               </Label>
             </div>
             {method === VerificationMethod.ID && (
-              <div className="mt-4 space-y-4">
+              <div className="mt-6 space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="id-input" className="text-sm">
+                  <Label htmlFor="id-input" className="text-base">
                     Cédula de identidad
                   </Label>
                   <Input 
@@ -152,18 +172,18 @@ const VerificationForm: React.FC = () => {
                 </div>
 
                 {idNumber && validateUruguayanId(idNumber) && (
-                  <div className="space-y-2">
-                    <Label className="text-sm">
+                  <div className="space-y-2 animate-fade-in">
+                    <Label className="text-base">
                       Número de celular asociado
                     </Label>
                     <Input
                       type="text"
-                      value={mockRetrievePhoneByID(idNumber)}
+                      value={mockRetrievePhoneByID(idNumber) || 'No encontrado'}
                       readOnly
                       disabled
-                      className="bg-gray-50 text-base"
+                      className={`bg-gray-50 text-base ${!mockRetrievePhoneByID(idNumber) ? 'text-red-500' : ''}`}
                     />
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm text-gray-500">
                       Este número está asociado con su cédula de identidad
                     </p>
                   </div>
@@ -173,18 +193,18 @@ const VerificationForm: React.FC = () => {
           </div>
         </div>
 
-        <div className={`flex items-start space-x-3 rounded-md border border-gray-200 p-4 ${method === VerificationMethod.PHONE ? 'bg-primary/5 border-primary/30' : ''}`}>
+        <div className={`flex items-start space-x-4 rounded-md border border-gray-200 p-6 ${method === VerificationMethod.PHONE ? 'bg-primary/5 border-primary/30' : ''}`}>
           <RadioGroupItem value={VerificationMethod.PHONE} id="phone-option" className="mt-1" />
           <div className="flex-1">
             <div className="flex items-center">
-              <Label htmlFor="phone-option" className="font-medium flex items-center gap-1">
-                <Phone size={18} className="text-primary" />
-                <span>📱 Ingresar celular</span>
+              <Label htmlFor="phone-option" className="font-medium flex items-center gap-2 text-lg">
+                <Phone size={24} className="text-primary" />
+                <span>Ingresar celular</span>
               </Label>
             </div>
             {method === VerificationMethod.PHONE && (
-              <div className="mt-4 space-y-2">
-                <Label htmlFor="phone-input" className="text-sm">
+              <div className="mt-6 space-y-2">
+                <Label htmlFor="phone-input" className="text-base">
                   Número de celular
                 </Label>
                 <Input 
@@ -203,7 +223,7 @@ const VerificationForm: React.FC = () => {
 
       <Button 
         onClick={handleSendCode}
-        className="w-full mt-6"
+        className="w-full mt-8 py-6 text-lg"
         disabled={(method === VerificationMethod.ID && !validateUruguayanId(idNumber)) || 
                 (method === VerificationMethod.PHONE && !validateUruguayanPhone(phoneNumber))}
       >
