@@ -3,15 +3,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { IdCard, Phone } from 'lucide-react';
+import { Phone } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { validateUruguayanId, validateUruguayanPhone, formatPhoneNumber, maskPhoneNumber } from '@/utils/validation';
 import CodeVerification from './CodeVerification';
+
 enum VerificationMethod {
   ID = 'id',
   PHONE = 'phone',
 }
+
 const VerificationForm: React.FC = () => {
   const [method, setMethod] = useState<VerificationMethod>(VerificationMethod.ID);
   const [idNumber, setIdNumber] = useState('');
@@ -129,7 +131,11 @@ const VerificationForm: React.FC = () => {
           <div className="flex-1">
             <div className="flex items-center">
               <Label htmlFor="id-option" className="font-medium flex items-center gap-1">
-                <IdCard size={18} className="text-primary" />
+                <img 
+                  src="/lovable-uploads/101b9a9e-ba09-4c25-8c83-248fe97b5990.png" 
+                  alt="Documento" 
+                  className="w-5 h-5 text-primary" 
+                />
                 <span>Ingresar cédula de identidad</span>
               </Label>
             </div>
@@ -161,7 +167,7 @@ const VerificationForm: React.FC = () => {
             <div className="flex items-center">
               <Label htmlFor="phone-option" className="font-medium flex items-center gap-1">
                 <Phone size={18} className="text-primary" />
-                <span> Ingresar celular</span>
+                <span> Ingresar celular</span>
               </Label>
             </div>
             {method === VerificationMethod.PHONE && <div className="mt-4 space-y-2">
@@ -179,4 +185,5 @@ const VerificationForm: React.FC = () => {
       </Button>
     </div>;
 };
+
 export default VerificationForm;
