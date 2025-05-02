@@ -1,12 +1,27 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React from 'react';
+import Logo from '@/components/Logo';
+import VerificationForm from '@/components/VerificationForm';
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-white flex flex-col">
+      {/* Header with logo */}
+      <header className="w-full py-4 px-4 flex justify-center border-b">
+        <Logo />
+      </header>
+      
+      {/* Main content */}
+      <main className="flex-grow flex flex-col items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white rounded-lg p-6 shadow-sm">
+          <VerificationForm />
+        </div>
+      </main>
+      
+      {/* Footer */}
+      <footer className="w-full py-4 px-6 text-center text-sm text-gray-500">
+        <p>© 2025 Crédito de la Casa. Todos los derechos reservados.</p>
+      </footer>
     </div>
   );
 };
