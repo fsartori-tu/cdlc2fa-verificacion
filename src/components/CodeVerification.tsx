@@ -2,10 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { validateVerificationCode } from '@/utils/validation';
 import { useToast } from '@/components/ui/use-toast';
-import { RefreshCw, ArrowLeft } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 
 interface CodeVerificationProps {
   phoneNumber: string;
@@ -21,7 +20,6 @@ const CodeVerification: React.FC<CodeVerificationProps> = ({
   const [code, setCode] = useState('');
   const [timeRemaining, setTimeRemaining] = useState(120); // 2 minutes in seconds
   const [canResend, setCanResend] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -41,11 +39,13 @@ const CodeVerification: React.FC<CodeVerificationProps> = ({
 
   const handleVerify = () => {
     if (!validateVerificationCode(code)) {
-      setError('El código debe tener 6 dígitos');
+      toast({
+        title: 'Error de validación',
+        description: 'El código debe tener 6 dígitos',
+        variant: 'destructive',
+      });
       return;
     }
-    
-    setError(null);
     
     // Mock verification - in a real app, this would call an API
     if (code === '123456') {
@@ -55,14 +55,17 @@ const CodeVerification: React.FC<CodeVerificationProps> = ({
       });
       onVerificationComplete();
     } else {
-      setError('El código ingresado no es válido. Intente nuevamente.');
+      toast({
+        title: 'Código incorrecto',
+        description: 'El código ingresado no es válido. Intente nuevamente.',
+        variant: 'destructive',
+      });
     }
   };
 
   const handleResend = () => {
     setTimeRemaining(120);
     setCanResend(false);
-    setError(null);
     toast({
       title: 'Código reenviado',
       description: 'Se ha enviado un nuevo código de verificación a su número',
@@ -76,23 +79,17 @@ const CodeVerification: React.FC<CodeVerificationProps> = ({
   };
 
   return (
-    <div className="space-y-8 max-w-md mx-auto">
-      <div className="text-center">
-        <h2 className="text-2xl font-semibold mb-4">Verificación de código</h2>
-        <p className="text-gray-600">
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold mb-2">Verificación de código</h2>
+        <p className="text-gray-600 text-sm">
           Hemos enviado un código de verificación al número {phoneNumber}
         </p>
       </div>
 
-      {error && (
-        <Alert variant="destructive" className="mb-6">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      <div className="space-y-6">
-        <div className="space-y-3">
-          <label htmlFor="code" className="text-base font-medium block text-center">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <label htmlFor="code" className="text-sm font-medium">
             Código de verificación
           </label>
           <Input 
@@ -101,43 +98,37 @@ const CodeVerification: React.FC<CodeVerificationProps> = ({
             inputMode="numeric"
             placeholder="Ingrese el código de 6 dígitos"
             value={code}
-            onChange={(e) => {
-              setError(null);
-              setCode(e.target.value.replace(/\D/g, '').substring(0, 6));
-            }}
+            onChange={(e) => setCode(e.target.value.replace(/\D/g, '').substring(0, 6))}
             maxLength={6}
-            className="text-center text-2xl tracking-widest py-6"
+            className="text-center text-lg tracking-widest"
           />
         </div>
 
         <div className="flex flex-col gap-4">
           <Button 
             onClick={handleVerify} 
-            className="w-full py-6 text-lg"
-            disabled={code.length !== 6}
+            className="w-full"
           >
             Verificar
           </Button>
 
-          <div className="flex items-center justify-between mt-4">
-            <Button
-              variant="ghost"
-              size="sm"
+          <div className="flex items-center justify-between">
+            <button 
+              type="button" 
               onClick={onBack}
-              className="text-base flex items-center gap-2 hover:bg-transparent hover:text-primary"
+              className="text-sm text-primary hover:underline"
             >
-              <ArrowLeft size={18} />
               Volver
-            </Button>
+            </button>
             
             <Button
               variant="outline"
               size="sm"
               onClick={handleResend}
               disabled={!canResend}
-              className="text-base flex items-center gap-2"
+              className="text-xs flex items-center gap-1"
             >
-              <RefreshCw size={18} className={!canResend ? "animate-spin" : ""} />
+              <RefreshCw size={14} className={!canResend ? "animate-spin" : ""} />
               {canResend ? 'Reenviar código' : `Reenviar en ${formatTime(timeRemaining)}`}
             </Button>
           </div>
