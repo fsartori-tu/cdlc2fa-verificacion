@@ -8,12 +8,10 @@ import { useToast } from '@/components/ui/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { validateUruguayanId, validateUruguayanPhone, formatPhoneNumber, maskPhoneNumber } from '@/utils/validation';
 import CodeVerification from './CodeVerification';
-
 enum VerificationMethod {
   ID = 'id',
   PHONE = 'phone',
 }
-
 const VerificationForm: React.FC = () => {
   const [method, setMethod] = useState<VerificationMethod>(VerificationMethod.ID);
   const [idNumber, setIdNumber] = useState('');
@@ -131,11 +129,7 @@ const VerificationForm: React.FC = () => {
           <div className="flex-1">
             <div className="flex items-center">
               <Label htmlFor="id-option" className="font-medium flex items-center gap-1">
-                <img 
-                  src="/lovable-uploads/101b9a9e-ba09-4c25-8c83-248fe97b5990.png" 
-                  alt="Documento" 
-                  className="w-5 h-5 text-primary" 
-                />
+                <img alt="Documento" className="w-5 h-5 text-primary" src="/lovable-uploads/11eea8d3-04d1-4091-bbe5-69e13fc68132.png" />
                 <span>Ingresar cédula de identidad</span>
               </Label>
             </div>
@@ -185,5 +179,4 @@ const VerificationForm: React.FC = () => {
       </Button>
     </div>;
 };
-
 export default VerificationForm;
