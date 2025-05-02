@@ -139,9 +139,7 @@ const VerificationForm: React.FC = () => {
                     Cédula de identidad
                   </Label>
                   <Input id="id-input" type="text" inputMode="numeric" placeholder="Ingrese los 8 dígitos de su cédula" value={idNumber} onChange={handleIdChange} className="text-base" />
-                  {idNumber === '12345678' && <p className="text-xs text-gray-500 italic">
-                      Nota: Este es un ejemplo de cédula sin teléfono asociado.
-                    </p>}
+                  {idNumber === '12345678' && <p className="text-xs text-gray-500 italic font-light">Está CI no tiene un número de celular asociado.</p>}
                 </div>
 
                 {idNumber && validateUruguayanId(idNumber) && !noPhoneFound && <div className="space-y-2">
