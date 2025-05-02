@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { IdCard, Phone } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   validateUruguayanId, 
   validateUruguayanPhone, 
@@ -25,12 +26,17 @@ const VerificationForm: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [retrievedPhone, setRetrievedPhone] = useState('');
   const [showCodeVerification, setShowCodeVerification] = useState(false);
+  const [noPhoneFound, setNoPhoneFound] = useState(false);
   const { toast } = useToast();
 
   const handleIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Only allow digits
     const value = e.target.value.replace(/\D/g, '');
     setIdNumber(value.substring(0, 8));
+    // Reset the no phone found alert when user is typing
+    if (noPhoneFound) {
+      setNoPhoneFound(false);
+    }
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +52,11 @@ const VerificationForm: React.FC = () => {
     setPhoneNumber(formatPhoneNumber(value));
   };
 
-  const mockRetrievePhoneByID = (id: string): string => {
+  const mockRetrievePhoneByID = (id: string): string | null => {
+    // Simulate a case where no phone is found for a specific ID (for demo purposes)
+    if (id === '12345678') {
+      return null;
+    }
     // In a real application, this would call an API to retrieve the phone number
     return '098 765 432'; // Mocked phone number
   };
@@ -64,7 +74,20 @@ const VerificationForm: React.FC = () => {
       
       // In a real app, this would make an API call to get the phone number
       const phone = mockRetrievePhoneByID(idNumber);
+      
+      // Handle the case where no phone is found
+      if (!phone) {
+        setNoPhoneFound(true);
+        toast({
+          title: 'No se encontró el número',
+          description: 'No se encontró un número de teléfono asociado a esta cédula de identidad.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      
       setRetrievedPhone(phone);
+      setNoPhoneFound(false);
       
       toast({
         title: 'Código enviado',
@@ -120,6 +143,15 @@ const VerificationForm: React.FC = () => {
         </p>
       </div>
 
+      {noPhoneFound && (
+        <Alert variant="destructive" className="bg-red-50 border-red-200">
+          <AlertDescription>
+            No se encontró un número de teléfono asociado a esta cédula de identidad. 
+            Por favor, verifique los datos ingresados o utilice otro método de verificación.
+          </AlertDescription>
+        </Alert>
+      )}
+
       <RadioGroup 
         value={method} 
         onValueChange={(value) => setMethod(value as VerificationMethod)}
@@ -149,16 +181,21 @@ const VerificationForm: React.FC = () => {
                     onChange={handleIdChange}
                     className="text-base"
                   />
+                  {idNumber === '12345678' && (
+                    <p className="text-xs text-gray-500 italic">
+                      Nota: Este es un ejemplo de cédula sin teléfono asociado.
+                    </p>
+                  )}
                 </div>
 
-                {idNumber && validateUruguayanId(idNumber) && (
+                {idNumber && validateUruguayanId(idNumber) && !noPhoneFound && (
                   <div className="space-y-2">
                     <Label className="text-sm">
                       Número de celular asociado
                     </Label>
                     <Input
                       type="text"
-                      value={mockRetrievePhoneByID(idNumber)}
+                      value={mockRetrievePhoneByID(idNumber) || ''}
                       readOnly
                       disabled
                       className="bg-gray-50 text-base"

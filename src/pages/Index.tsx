@@ -7,13 +7,13 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header with logo */}
-      <header className="w-full py-4 px-4 flex justify-center border-b">
+      <header className="w-full py-6 px-4 flex justify-center border-b">
         <Logo />
       </header>
       
       {/* Main content */}
       <main className="flex-grow flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white rounded-lg p-6 shadow-sm">
+        <div className="w-full max-w-lg bg-white rounded-lg p-8 shadow-sm">
           <VerificationForm />
         </div>
       </main>
