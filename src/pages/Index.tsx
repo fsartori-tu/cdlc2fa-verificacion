@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Logo from '@/components/Logo';
 import VerificationForm from '@/components/VerificationForm';
 import LoginForm from '@/components/LoginForm';
+import TopBar from '@/components/TopBar';
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -11,12 +12,21 @@ const Index = () => {
     setIsLoggedIn(true);
   };
 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header with logo */}
       <header className="w-full py-6 px-4 flex justify-center border-b">
         <Logo />
       </header>
+      
+      {/* Top bar - only show when logged in */}
+      {isLoggedIn && (
+        <TopBar username="admin" onLogout={handleLogout} />
+      )}
       
       {/* Main content */}
       <main className="flex-grow flex flex-col items-center justify-center p-4">
