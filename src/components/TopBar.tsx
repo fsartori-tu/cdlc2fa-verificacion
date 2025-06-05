@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { LogOut } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface TopBarProps {
   username: string;
@@ -9,9 +10,21 @@ interface TopBarProps {
 
 const TopBar: React.FC<TopBarProps> = ({ username, onLogout }) => {
   return (
-    <div className="w-full bg-gray-50 border-b px-6 py-3 flex justify-end items-center">
+    <div className="w-full bg-white border-b px-6 py-3 flex justify-between items-center">
+      {/* Logo on the left */}
+      <div className="flex items-center">
+        <img
+          src="https://chat.openai.com/mnt/data/logo_credito_de_la_casa.png"
+          alt="Crédito de la Casa"
+          className="h-8"
+        />
+      </div>
+      
+      {/* User info and logout on the right */}
       <div className="flex items-center space-x-3">
-        <span className="text-sm font-medium text-gray-700">{username}</span>
+        <Badge variant="secondary" className="px-3 py-1">
+          {username}
+        </Badge>
         <button
           onClick={onLogout}
           className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-800 transition-colors"
