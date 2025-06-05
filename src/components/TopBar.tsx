@@ -1,23 +1,18 @@
-
 import React from 'react';
 import { LogOut } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-
 interface TopBarProps {
   username: string;
   onLogout: () => void;
 }
-
-const TopBar: React.FC<TopBarProps> = ({ username, onLogout }) => {
-  return (
-    <div className="w-full bg-white border-b px-6 py-3 flex justify-between items-center">
+const TopBar: React.FC<TopBarProps> = ({
+  username,
+  onLogout
+}) => {
+  return <div className="w-full bg-white border-b px-6 py-3 flex justify-between items-center">
       {/* Logo on the left */}
       <div className="flex items-center">
-        <img
-          src="https://chat.openai.com/mnt/data/logo_credito_de_la_casa.png"
-          alt="Crédito de la Casa"
-          className="h-8"
-        />
+        
       </div>
       
       {/* User info and logout on the right */}
@@ -25,16 +20,11 @@ const TopBar: React.FC<TopBarProps> = ({ username, onLogout }) => {
         <Badge variant="secondary" className="px-3 py-1">
           {username}
         </Badge>
-        <button
-          onClick={onLogout}
-          className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-800 transition-colors"
-        >
+        <button onClick={onLogout} className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-800 transition-colors">
           <LogOut className="h-4 w-4" />
           <span>Cerrar sesión</span>
         </button>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default TopBar;
